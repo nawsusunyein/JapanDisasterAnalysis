@@ -49,13 +49,51 @@ def load_data():
 try:
      df = load_data()
      st.success("Earhtquake dataset loaded successfully!")
+     
+     #Year and Month Filters
+     st.subheader("Filter Earthquake Data")
+     col1, col2 = st.columns(2)
+     with col1:
+        selected_year = st.selectbox(
+            "Selected  Year",
+            options=["All"] + sorted(df["year"].unique().tolist())
+        )
+
+     with col2:
+         selected_month = st.selectbox(
+             "Select Month",
+             options=["All"] + list(range(1,13))
+         )
+
+     #Apply Filters
+     filtered_df = df.copy()
+     if selected_year != "All":
+         filtered_df = filtered_df[
+           filtered_df["year"] == selected_year
+         ]
+
+     if selected_month != "All":
+         filtered_df = filtered_df[
+             filtered_df["month"] == selected_month
+         ]
      st.subheader("Earthquake Overview")
 
     #Calculate key statistics
-     total_earthquakes = len(df)
-     most_active_year  = df["year"].value_counts().idxmax()
-     most_active_month = df["month"].value_counts().idxmax()
-     average_magnitude = df["mag"].mean()
+     total_earthquakes = len(filtered_df)
+     most_active_year  = (
+         filtered_df["year"].value_counts().idxmax()
+         if not filtered_df.empty else "N/A"
+     )
+
+     most_active_month = (
+         filtered_df["month"].value_counts().idxmax()
+         if not filtered_df.empty else "N/A"
+     )
+
+     average_magnitude = (
+         filtered_df["mag"].mean()
+         if not filtered_df.empty else 0
+     )
 
     #Dsiplay KPI cards
      col1,col2,col3,col4 = st.columns(4)
@@ -85,7 +123,7 @@ try:
     #Yearly Earthquake Frquency
      st.subheader("Earthquake Frequency by Year")
      yearly_frequency = (
-       df.groupby("year")
+       filtered_df.groupby("year")
          .size()
          .reset_index(name="earthquake_count")
      )
@@ -101,13 +139,17 @@ try:
          }
      )
 
+     fig_yearly.update_xaxes(
+         type="category"
+     )
+    
      st.plotly_chart(fig_yearly, use_container_width=True)
    
 
     #Monthly Earthquake Frquency
      st.subheader("Earthquake Frequency by Month")
      yearly_frequency = (
-       df.groupby("month")
+       filtered_df.groupby("month")
          .size()
          .reset_index(name="earthquake_count")
      )
@@ -123,6 +165,13 @@ try:
          }
      )
 
+     fig_monthly.update_xaxes(
+         type="category",
+         tickmode="linear",
+         dtick=1
+     )
+
+    
      st.plotly_chart(fig_monthly, use_container_width=True)
      st.subheader("Earthquake Dataset Preview")
 
