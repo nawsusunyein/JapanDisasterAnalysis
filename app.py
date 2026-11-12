@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
 from pathlib import Path
 
 st.set_page_config(
@@ -80,7 +81,49 @@ try:
             "Averaage Magnitude",
             f"{average_magnitude:.2f}"
         )
-    
+
+    #Yearly Earthquake Frquency
+     st.subheader("Earthquake Frequency by Year")
+     yearly_frequency = (
+       df.groupby("year")
+         .size()
+         .reset_index(name="earthquake_count")
+     )
+
+     fig_yearly = px.bar(
+         yearly_frequency,
+         x="year",
+         y="earthquake_count",
+         title="Number of Earthquakes per Year",
+         labels={
+             "year": "Year",
+             "earthquake_count": "Number of Earthquakes"
+         }
+     )
+
+     st.plotly_chart(fig_yearly, use_container_width=True)
+   
+
+    #Monthly Earthquake Frquency
+     st.subheader("Earthquake Frequency by Month")
+     yearly_frequency = (
+       df.groupby("month")
+         .size()
+         .reset_index(name="earthquake_count")
+     )
+
+     fig_monthly = px.bar(
+         yearly_frequency,
+         x="month",
+         y="earthquake_count",
+         title="Number of Earthquakes per Month",
+         labels={
+             "year": "Month",
+             "earthquake_count": "Number of Earthquakes"
+         }
+     )
+
+     st.plotly_chart(fig_monthly, use_container_width=True)
      st.subheader("Earthquake Dataset Preview")
 
      st.dataframe(
