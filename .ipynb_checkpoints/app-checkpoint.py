@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import folium
+from folium.plugins import MarkerCluster
+from streamlit_folium import folium_static
 from pathlib import Path
 
 st.set_page_config(
@@ -49,7 +52,40 @@ def load_data():
 try:
      df = load_data()
      st.success("Earhtquake dataset loaded successfully!")
-     
+
+     #Extract unique regions from place column
+     regions = sorted(
+         df["place"]
+          .dropna()
+          .astype(str)
+          .unique()
+     )
+
+     df["region"] = (
+         df["place"] 
+          .fillna("")
+          .astype(str)
+          .str.replace(r"^.*?\bof\s+","",regex=True)
+          .str.replace(r",\s*Japan$","",regex=True)
+          .str.strip()
+     )
+
+     regions = sorted(
+        df["region"]
+          .loc[lambda x: x != ""]
+          .dropna()
+          .unique()
+     )
+
+     #Region Selection
+     st.subheader("Select Region")
+     selected_region = st.selectbox(
+         "Search and select a region",
+         options=["All Regions"] + regions,
+         index=0,
+         help="Type to search for a region"
+     )
+
      #Year and Month Filters
      st.subheader("Filter Earthquake Data")
      col1, col2 = st.columns(2)
@@ -65,6 +101,7 @@ try:
              options=["All"] + list(range(1,13))
          )
 
+     
      #Apply Filters
      filtered_df = df.copy()
      if selected_year != "All":
@@ -76,6 +113,16 @@ try:
          filtered_df = filtered_df[
              filtered_df["month"] == selected_month
          ]
+
+     if selected_region != "All Regions":
+         filtered_df = filtered_df[
+           filtered_df["region"] == selected_region
+         ]
+
+     st.write(
+         f"Earthquakes found:{len(filtered_df):,}"
+     )
+
      st.subheader("Earthquake Overview")
 
     #Calculate key statistics
@@ -173,6 +220,65 @@ try:
 
     
      st.plotly_chart(fig_monthly, use_container_width=True)
+
+     #Interactive Earthquake Map
+     st.subheader("Earthquake Locations in Japan")
+    
+     if not filtered_df.empty: 
+         earthquake_map = folium.Map(
+             location=[36.2, 138.2],
+             zoom_start=5,
+             titles = "CartoDB position"
+         )
+
+     marker_cluster = MarkerCluster().add_to(earthquake_map)
+
+    #Limit markers for better performance
+     map_df = filtered_df
+
+     if len(map_df) > 2000 :
+        map_df = map_df.sample(
+            n = 2000,
+            random_state = 42
+        )
+     for _, row in map_df.iterrows():
+        popup_text = f"""
+            <b>Location:</b>{row['place']}<br>
+            <b>Date:</b>{row['time']}<br>
+            <b>Magnitude:</b>{row['mag']}<br>
+            <b>Depth:</b>{row['depth']} km
+        """
+
+        folium.CircleMarker(
+            location = [
+                row["latitude"],
+                row["longitude"]
+            ],
+            tooltip=str(row["region"]),
+            radius =  5,
+            color = "red",
+            fill = True,
+            fill_color = "orange",
+            fill_opacity = 0.7,
+            popup = folium.Popup(
+                popup_text ,
+                max_width = 300
+            )
+        ).add_to(marker_cluster)
+
+        folium_static(
+            earthquake_map,
+            width= None,
+            height=600
+        )
+
+        st.caption(
+            f"Displaying {len(map_df):,} earthquake locations"
+            f"out of {len(filtered_df):,} filtered records."
+        )
+     else :
+        st.warning("No earthquake records found for the selected filters")
+
      st.subheader("Earthquake Dataset Preview")
 
      st.dataframe(
