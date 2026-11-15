@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import folium
+import calendar
+
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
 from pathlib import Path
@@ -12,6 +14,86 @@ st.set_page_config(
     layout="wide"
 )
 
+
+# Custom CSS 
+st.markdown("""
+   <style>
+     .stApp {
+       background-color: #080d18;
+       color:#ffffff;
+     }
+
+   </style>
+""", unsafe_allow_html = True
+)
+
+#localizations
+  translations = {
+      "EN": {
+          "title":"Japan Earthquake Analysis Dashboard",
+          "filters":"Earthquake Filters",
+          "year":"Selected Year",
+          "month":"Selected Month",
+          "magnitude":"Selected Magnitude",
+          "region":"Selected Region",
+          "overview":"Earthquake Overview",
+          "total":"Total Earthquakes",
+          "average":"Average Magnitude",
+          "active_year":"Most Active Year",
+          "active_month":"Most Active Month",
+          "map":"Earthquake Location Map",
+          "year_chart":"Number of Earthquakes per Year",
+          "month_chart":"Number of Earthquakes per Month",
+          "region_chart":"",
+          "magnitude_chart":"",
+          "all":"All",
+          "footer":"Analysed by Naw Su Su Nyein",
+          "no_data":"No earthquake records found for the selected filters."
+          
+      },
+      "JP" : {
+          "title":"日本の地震分析ダッシュボード",
+          "filters":"地震フィルター",
+          "year":"年を選択",
+          "month":"月を選択",
+          "magnitude":"マグニチュードを選択",
+          "region":"地域を選択",
+          "overview":"地震の概要",
+          "total":"地震の総数",
+          "average":"平均マグニチュード",
+          "active_year":"最も地震が多い年",
+          "active_month":"最も地震が多い月",
+          "map":"地震発生場所マップ",
+          "year_chart":"年別の地震発生数",
+          "month_chart":"月別の地震発生数",
+          "region_chart":"地域別の地震発生数",
+          "magnitude_chart":"マグニチュード別の地震発生数",
+          "all":"すべて",
+          "footer":"分析者：Naw Su Su Nyein",
+          "no_data":"選択した条件に該当する地震データはありません。"
+      },
+      "MM" : {
+          "title":"ဂျပန်နိုင်ငံ ငလျင်ဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာမှု Dashboard",
+          "filters":"ငလျင် စစ်ထုတ်မှုများ",
+          "year":"ခုနှစ် ရွေးချယ်ရန်",
+          "month":"လ ရွေးချယ်ရန်",
+          "magnitude":"ငလျင်ပြင်းအား ရွေးချယ်ရန်",
+          "region":"ဒေသ ရွေးချယ်ရန်",
+          "overview":"ငလျင် အကျဉ်းချုပ်",
+          "total":"ငလျင် စုစုပေါင်း",
+          "average":"ပျမ်းမျှ ငလျင်ပြင်းအား",
+          "active_year":"ငလျင်အများဆုံး ဖြစ်ပွားသည့်နှစ်",
+          "active_month":"ငလျင်အများဆုံး ဖြစ်ပွားသည့်လ",
+          "map":"ငလျင်ဖြစ်ပွားသည့် နေရာမြေပုံ",
+          "year_chart":"နှစ်အလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "month_chart":"လအလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "region_chart":"ဒေသအလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "magnitude_chart":"ပြင်းအားအလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "all":"အားလုံး",
+          "footer":"လေ့လာဆန်းစစ်သူ - Naw Su Su Nyein",
+          "no_data":"ရွေးချယ်ထားသော စစ်ထုတ်မှုများအတွက် ငလျင်မှတ်တမ်း မရှိပါ။"
+      }
+  }
 
 #Dashboard Title
 

@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import folium
+import calendar
+
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
 from pathlib import Path
@@ -12,6 +14,17 @@ st.set_page_config(
     layout="wide"
 )
 
+
+# Custom CSS 
+st.markdown("""
+   <style>
+     .stApp {
+       background-color: #080d18;
+       color:#ffffff;
+     }
+   </style>
+""", unsafe_allow_html = True
+)
 
 #Dashboard Title
 
