@@ -223,59 +223,88 @@ try:
 
      #Interactive Earthquake Map
      st.subheader("Earthquake Locations in Japan")
-    
-     if not filtered_df.empty: 
+
+     map_df = filtered_df.copy()
+     map_df["latitude"] = pd.to_numeric(
+         map_df["latitude"],errors = "coerce"
+     )
+     map_df["longitude"] = pd.to_numeric(
+         map_df["longitude"], errors="coerce"
+     )
+     map_df = map_df.dropna(
+         subset = ["latitude", "longitude"]
+     )
+
+     if not map_df.empty:
+         # default map
+         map_center = [36.2, 138.2]
+         zoom_level = 5
+
+        # zoom into selected region
+         if selected_region != "All Regions":
+            map_center = [
+                map_df["latitude"].mean(),
+                map_df["longitude"].mean()
+            ]
+            zoom_level = 8
+
+        #Create one map
          earthquake_map = folium.Map(
-             location=[36.2, 138.2],
-             zoom_start=5,
-             titles = "CartoDB position"
+            location=map_center,
+            zoom_start=zoom_level,
+            tiles="OpenStreetMap"
          )
 
-     marker_cluster = MarkerCluster().add_to(earthquake_map)
+        #Create marker cluster
+         marker_cluster = MarkerCluster().add_to(
+            earthquake_map
+         )
 
-    #Limit markers for better performance
-     map_df = filtered_df
-
-     if len(map_df) > 2000 :
-        map_df = map_df.sample(
-            n = 2000,
-            random_state = 42
-        )
-     for _, row in map_df.iterrows():
-        popup_text = f"""
-            <b>Location:</b>{row['place']}<br>
-            <b>Date:</b>{row['time']}<br>
-            <b>Magnitude:</b>{row['mag']}<br>
-            <b>Depth:</b>{row['depth']} km
-        """
-
-        folium.CircleMarker(
-            location = [
-                row["latitude"],
-                row["longitude"]
-            ],
-            tooltip=str(row["region"]),
-            radius =  5,
-            color = "red",
-            fill = True,
-            fill_color = "orange",
-            fill_opacity = 0.7,
-            popup = folium.Popup(
-                popup_text ,
-                max_width = 300
+        #Limit markers for performance
+         if len(map_df) > 2000:
+            display_df = map_df.sample(
+                n=2000,
+                random_state=42
             )
-        ).add_to(marker_cluster)
+         else:
+            display_df = map_df
 
-        folium_static(
+        #Add earthquake markers
+         for _, row in display_df.iterrows():
+            popup_text=f"""
+                <b>Location:</b> {row['place']}<br>
+                <b>Date:</b>{row['time']}<br>
+                <b>Magnitude:</b>{row['mag']}<br>
+                <b>Depth:</b>{row['depth']} km
+            """
+
+            folium.CircleMarker(
+                location=[
+                    row["latitude"],
+                    row["longitude"]
+                ],
+                radius=5,
+                color="red",
+                fill=True,
+                fill_color="orange",
+                fill_opacity=0.7,
+                tooltip=str(row["region"]),
+                popup=folium.Popup(
+                    popup_text,
+                    max_width=300
+                )
+            ).add_to(marker_cluster)
+
+         folium_static(
             earthquake_map,
             width= None,
             height=600
-        )
+         )
 
-        st.caption(
+         st.caption(
             f"Displaying {len(map_df):,} earthquake locations"
             f"out of {len(filtered_df):,} filtered records."
-        )
+         )
      else :
         st.warning("No earthquake records found for the selected filters")
 
