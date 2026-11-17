@@ -16,19 +16,265 @@ st.set_page_config(
 
 
 # Custom CSS 
+
 st.markdown("""
-   <style>
-     .stApp {
-       background-color: #080d18;
-       color:#ffffff;
-     }
-   </style>
-""", unsafe_allow_html = True
-)
+<style>
+
+/* Main dashboard background */
+.stApp {
+    background-color: #080d18;
+    color: #f1f5f9;
+}
+
+/* Main content spacing */
+.main .block-container {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+    max-width: 1500px;
+}
+
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #101827;
+}
+
+[data-testid="stSidebar"] * {
+    color: #e2e8f0;
+}
+
+/* General text */
+.stApp p,
+.stApp span,
+.stApp label,
+.stApp .stMarkdown {
+    color: #e2e8f0;
+}
+
+/* Dashboard headings */
+.stApp h1,
+.stApp h2,
+.stApp h3 {
+    color: #f8fafc;
+}
+
+/* Metric cards */
+[data-testid="stMetric"] {
+    background-color: #151f30;
+    border: 1px solid #334155;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* Metric labels */
+[data-testid="stMetricLabel"] {
+    color: #38bdf8 !important;
+}
+
+/* Metric values */
+[data-testid="stMetricValue"] {
+    color: #ffffff !important;
+}
+
+/* Metric delta */
+[data-testid="stMetricDelta"] {
+    color: #4ade80 !important;
+}
+
+/* Selectbox background */
+div[data-baseweb="select"] > div {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #475569 !important;
+}
+
+/* Selectbox selected text */
+div[data-baseweb="select"] input,
+div[data-baseweb="select"] div {
+    color: #ffffff !important;
+}
+
+/* Selectbox dropdown menu */
+div[data-baseweb="popover"] {
+    background-color: #1e293b !important;
+}
+
+div[data-baseweb="menu"] {
+    background-color: #1e293b !important;
+}
+
+div[data-baseweb="menu"] * {
+    color: #f1f5f9 !important;
+}
+
+/* Selectbox and slider titles */
+.stSelectbox label,
+.stSlider label {
+    color: #38bdf8 !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+}
+
+/* Slider */
+[data-testid="stSlider"] {
+    padding-top: 10px;
+}
+
+[data-testid="stSlider"] [data-baseweb="slider"] {
+    color: #38bdf8;
+}
+
+/* Input boxes */
+.stTextInput input,
+.stNumberInput input,
+.stDateInput input {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    border: 1px solid #475569 !important;
+}
+
+/* Buttons */
+.stButton button {
+    background-color: #0e7490 !important;
+    color: #ffffff !important;
+    border: 1px solid #38bdf8 !important;
+    border-radius: 8px;
+}
+
+.stButton button:hover {
+    background-color: #0369a1 !important;
+    color: #ffffff !important;
+}
+
+/* Filter container */
+.filter-container {
+    background-color: #111c2e;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 25px;
+}
+
+/* Section titles */
+.section-title {
+    color: #38bdf8 !important;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+/* Chart container */
+.chart-container {
+    background-color: #111c2e;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 12px;
+}
+
+/* Dataframe */
+[data-testid="stDataFrame"] {
+    border: 1px solid #334155;
+    border-radius: 10px;
+}
+
+/* Alert and information boxes */
+[data-testid="stAlert"] {
+    background-color: #172a40 !important;
+    color: #f1f5f9 !important;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: #94a3b8 !important;
+    padding: 25px 0 10px 0;
+    border-top: 1px solid #334155;
+    margin-top: 40px;
+    font-size: 14px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+#localizations
+translations = {
+      "EN": {
+          "title":"Japan Earthquake Analysis Dashboard",
+          "filters":"Earthquake Filters",
+          "year":"Selected Year",
+          "month":"Selected Month",
+          "magnitude":"Selected Magnitude",
+          "region":"Selected Region",
+          "overview":"Earthquake Overview",
+          "total":"Total Earthquakes",
+          "average":"Average Magnitude",
+          "active_year":"Most Active Year",
+          "active_month":"Most Active Month",
+          "map":"Earthquake Location Map",
+          "year_chart":"Number of Earthquakes per Year",
+          "month_chart":"Number of Earthquakes per Month",
+          "region_chart":"Number of Earthquakes by Region",
+          "magnitude_chart":"Number of Earthquakes by Magnitude",
+          "all":"All",
+          "footer":"Analysed by Naw Su Su Nyein",
+          "no_data":"No earthquake records found for the selected filters.",
+          "earthquake_data_visualization": "Earthquake Data Visualization",
+          "earthquake_filtered_records":"Displaying 11,904 earthquake locations out of 11,904 filtered records.",
+          "earthquake_analysis_dashboard":"Japan Earthquake Analysis Dashboard"
+          
+      },
+      "JP" : {
+          "title":"日本の地震分析ダッシュボード",
+          "filters":"地震フィルター",
+          "year":"年を選択",
+          "month":"月を選択",
+          "magnitude":"マグニチュードを選択",
+          "region":"地域を選択",
+          "overview":"地震の概要",
+          "total":"地震の総数",
+          "average":"平均マグニチュード",
+          "active_year":"最も地震が多い年",
+          "active_month":"最も地震が多い月",
+          "map":"地震発生場所マップ",
+          "year_chart":"年別の地震発生数",
+          "month_chart":"月別の地震発生数",
+          "region_chart":"地域別の地震発生数",
+          "magnitude_chart":"マグニチュード別の地震発生数",
+          "all":"すべて",
+          "footer":"分析者：Naw Su Su Nyein",
+          "no_data":"選択した条件に該当する地震データはありません。",
+          "earthquake_data_visualization": "地震データの可視化",
+          "earthquake_filtered_records":"絞り込み後の11,904件のデータのうち、11,904件の地震発生地点を表示しています。",
+          "earthquake_analysis_dashboard":"日本の地震分析ダッシュボード"
+      },
+      "MM" : {
+          "title":"ဂျပန်နိုင်ငံ ငလျင်ဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာမှု Dashboard",
+          "filters":"ငလျင် စစ်ထုတ်မှုများ",
+          "year":"ခုနှစ် ရွေးချယ်ရန်",
+          "month":"လ ရွေးချယ်ရန်",
+          "magnitude":"ငလျင်ပြင်းအား ရွေးချယ်ရန်",
+          "region":"ဒေသ ရွေးချယ်ရန်",
+          "overview":"ငလျင် အကျဉ်းချုပ်",
+          "total":"ငလျင် စုစုပေါင်း",
+          "average":"ပျမ်းမျှ ငလျင်ပြင်းအား",
+          "active_year":"ငလျင်အများဆုံး ဖြစ်ပွားသည့်နှစ်",
+          "active_month":"ငလျင်အများဆုံး ဖြစ်ပွားသည့်လ",
+          "map":"ငလျင်ဖြစ်ပွားသည့် နေရာမြေပုံ",
+          "year_chart":"နှစ်အလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "month_chart":"လအလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "region_chart":"ဒေသအလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "magnitude_chart":"ပြင်းအားအလိုက် ငလျင်ဖြစ်ပွားမှု",
+          "all":"အားလုံး",
+          "footer":"လေ့လာဆန်းစစ်သူ - Naw Su Su Nyein",
+          "no_data":"ရွေးချယ်ထားသော စစ်ထုတ်မှုများအတွက် ငလျင်မှတ်တမ်း မရှိပါ။",
+          "earthquake_data_visualization": "ငလျင်ဒေတာ ဖော်ပြခြင်း",
+          "earthquake_filtered_records":"စစ်ထုတ်ထားသော မှတ်တမ်း ၁၁,၉၀၄ ခုအနက် ငလျင်ဖြစ်ပွားသည့် တည်နေရာ ၁၁,၉၀၄ ခုကို ပြသထားသည်။",
+          "earthquake_analysis_dashboard":"ဂျပန်နိုင်ငံ ငလျင်ဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာမှု ဒက်ရှ်ဘုတ်"
+      }
+  }
 
 #Dashboard Title
 
-st.title("Japan Earthquake Analysis Dashboard")
 st.markdown(
     """
       Explore earthquake activity across Japan 
@@ -54,27 +300,21 @@ def load_data():
         errors = "coerce"
     )
 
-    df = df.dropna(subset = ["time"])
+    df = df.dropna(subset = ["time"]).copy()
+    
     df["year"] = df["time"].dt.year
     df["month"] = df["time"].dt.month
-    return df
+    df["latitude"] = pd.to_numeric(
+        df["latitude"] , errors = "coerce"
+    )
+    df["longitude"] = pd.to_numeric(
+        df["longitude"], errors="coerce"
+    )
+    df["mag"] = pd.to_numeric(
+        df["mag"], errors="coerce"
+    )
 
-
-# Display Dataset
-
-try:
-     df = load_data()
-     st.success("Earhtquake dataset loaded successfully!")
-
-     #Extract unique regions from place column
-     regions = sorted(
-         df["place"]
-          .dropna()
-          .astype(str)
-          .unique()
-     )
-
-     df["region"] = (
+    df["region"] = (
          df["place"] 
           .fillna("")
           .astype(str)
@@ -82,173 +322,225 @@ try:
           .str.replace(r",\s*Japan$","",regex=True)
           .str.strip()
      )
+    
+    return df
 
-     regions = sorted(
-        df["region"]
-          .loc[lambda x: x != ""]
-          .dropna()
-          .unique()
+
+# Display Dataset
+
+try:
+     df = load_data()
+    
+except FileNotFoundError:
+    st.error(
+        "Earthquake CSV file not found. Pleaase check the file path"
+    )
+
+except Exception as e:
+    st.error(f"Error loading dataset:{e}")
+
+
+#header : title + language
+
+header_col1, header_col2 = st.columns([5,1])
+
+with header_col2:
+
+     language = st.selectbox(
+         "Language",
+         ["EN","JP","MM"],
+         index = 1,
+         format_func=lambda x: {
+             "EN": "English",
+             "JP":"日本語",
+             "MM":"မြန်မာ"
+         }[x]
      )
+     t = translations[language]
+with header_col1:
 
-     #Region Selection
-     st.subheader("Select Region")
-     selected_region = st.selectbox(
-         "Search and select a region",
-         options=["All Regions"] + regions,
-         index=0,
-         help="Type to search for a region"
-     )
+     st.title(t["title"])
+st.markdown("---")
 
-     #Year and Month Filters
-     st.subheader("Filter Earthquake Data")
-     col1, col2 = st.columns(2)
-     with col1:
+#Filter Section
+
+st.markdown(
+    f'<p class="section-title">{t["filters"]}</p>',
+    unsafe_allow_html = True
+)
+
+with st.container(border=True):
+    #First row: Year and Month
+
+    filter_col1, filter_col2 = st.columns(2)
+    years = sorted(
+        df["year"].dropna().unique().astype(int).tolist()
+    )
+
+    months = list(range(1,13))
+
+    with filter_col1:
         selected_year = st.selectbox(
-            "Selected  Year",
-            options=["All"] + sorted(df["year"].unique().tolist())
+            t["year"],
+            [t["all"]] + years
         )
 
-     with col2:
-         selected_month = st.selectbox(
-             "Select Month",
-             options=["All"] + list(range(1,13))
+    with filter_col2:
+        selected_month = st.selectbox(
+            t["month"],
+            [t["all"]] + months,
+            format_func=lambda x: (
+                t["all"] if x == t["all"]
+                else calendar.month_name[x]
+            )
+        )
+
+    st.markdown("---")
+
+    #Second row: Magnitude and Region
+
+    filter_col3, filter_col4 = st.columns(2)
+
+    valid_magnitudes = df["mag"].dropna()
+
+    if valid_magnitudes.empty:
+        min_mag, max_mag = 0.0, 10.0
+    else : 
+        min_mag = float(valid_magnitudes.min())
+        max_mag = float(valid_magnitudes.max())
+
+    with filter_col3:
+        if min_mag == max_mag:
+            selected_magnitude = (min_mag, max_mag)
+            st.caption(f"{t['magnitude']}:{min_mag:.1f}")
+        else :
+            selected_magnitude = st.slider(
+                t["magnitude"],
+                min_value = min_mag,
+                max_value = max_mag,
+                value=(min_mag, max_mag),
+                step=0.1
+            )
+
+    with filter_col4:
+         regions = sorted(
+             df.loc[
+                 df["region"] != "",
+                 "region"
+             ].dropna().unique().tolist()
          )
 
-     
-     #Apply Filters
-     filtered_df = df.copy()
-     if selected_year != "All":
-         filtered_df = filtered_df[
-           filtered_df["year"] == selected_year
-         ]
+         selected_region = st.selectbox(
+             t["region"],
+             [t["all"]] + regions
+         )
 
-     if selected_month != "All":
+#Apply Filters
+
+    filtered_df = df.copy()
+    if selected_year != t["all"] :
+            filtered_df = filtered_df[
+              filtered_df["year"] == selected_year
+            ]
+
+    if selected_month != t["all"]:
          filtered_df = filtered_df[
              filtered_df["month"] == selected_month
          ]
 
-     if selected_region != "All Regions":
+    if selected_region != t["all"]:
          filtered_df = filtered_df[
            filtered_df["region"] == selected_region
          ]
 
-     st.write(
-         f"Earthquakes found:{len(filtered_df):,}"
-     )
+    filtered_df = filtered_df[
+        filtered_df["mag"].between(
+            selected_magnitude[0],
+            selected_magnitude[1]
+        )
+    ]
 
-     st.subheader("Earthquake Overview")
+#overview section
 
-    #Calculate key statistics
-     total_earthquakes = len(filtered_df)
-     most_active_year  = (
-         filtered_df["year"].value_counts().idxmax()
-         if not filtered_df.empty else "N/A"
-     )
+st.markdown(
+     f'<p class="section-title">{t["overview"]}</p>',
+     unsafe_allow_html=True
+ )
+if filtered_df.empty:
+        st.warning(t["no_data"])
+        st.stop()
+    
 
-     most_active_month = (
-         filtered_df["month"].value_counts().idxmax()
-         if not filtered_df.empty else "N/A"
-     )
+#Calculate key statistics
+total_earthquakes = len(filtered_df)
 
-     average_magnitude = (
-         filtered_df["mag"].mean()
-         if not filtered_df.empty else 0
-     )
+average_magnitude = filtered_df["mag"].mean()
 
-    #Dsiplay KPI cards
-     col1,col2,col3,col4 = st.columns(4)
-     with col1:
-        st.metric(
+most_active_year  = (
+    filtered_df["year"].value_counts().idxmax()
+    if not filtered_df.empty else "N/A"
+)
+
+most_active_month = (
+    filtered_df["month"].value_counts().idxmax()
+    if not filtered_df.empty else "N/A"
+)
+
+average_magnitude = (
+    filtered_df["mag"].mean()
+    if not filtered_df.empty else 0
+)
+
+#Dsiplay KPI cards
+
+metric_col1, metric_col2 = st.columns(2)
+
+with metric_col1:
+    st.metric(
             "Total Earthquakes",
             f"{total_earthquakes:,}"
         )
 
-     with col2:
-        st.metric(
-            "Most Active Year",
-            int(most_active_year)
-        )
-     with col3:
-        st.metric(
-            "Most Active Month",
-            int(most_active_month)
-        )
+with metric_col2:
+    st.metric(
+        t["average"],
+        f"{average_magnitude:.2f}"
+    )
 
-     with col4:
-        st.metric(
-            "Averaage Magnitude",
-            f"{average_magnitude:.2f}"
-        )
+metric_col3, metric_col4 = st.columns(2)
+with metric_col3:
+    st.metric(
+        t["active_year"],
+        int(most_active_year)
+    )
 
-    #Yearly Earthquake Frquency
-     st.subheader("Earthquake Frequency by Year")
-     yearly_frequency = (
-       filtered_df.groupby("year")
-         .size()
-         .reset_index(name="earthquake_count")
-     )
+with metric_col4:
+    st.metric(
+        t["active_month"],
+        most_active_month
+    )
 
-     fig_yearly = px.bar(
-         yearly_frequency,
-         x="year",
-         y="earthquake_count",
-         title="Number of Earthquakes per Year",
-         labels={
-             "year": "Year",
-             "earthquake_count": "Number of Earthquakes"
-         }
-     )
+st.markdown("---")
 
-     fig_yearly.update_xaxes(
-         type="category"
-     )
-    
-     st.plotly_chart(fig_yearly, use_container_width=True)
-   
+#Earthquake map
 
-    #Monthly Earthquake Frquency
-     st.subheader("Earthquake Frequency by Month")
-     yearly_frequency = (
-       filtered_df.groupby("month")
-         .size()
-         .reset_index(name="earthquake_count")
-     )
+st.markdown(
+    f'<p class="section-title">{t["map"]}</p>',
+    unsafe_allow_html=True
+)
 
-     fig_monthly = px.bar(
-         yearly_frequency,
-         x="month",
-         y="earthquake_count",
-         title="Number of Earthquakes per Month",
-         labels={
-             "year": "Month",
-             "earthquake_count": "Number of Earthquakes"
-         }
-     )
-
-     fig_monthly.update_xaxes(
-         type="category",
-         tickmode="linear",
-         dtick=1
-     )
-
-    
-     st.plotly_chart(fig_monthly, use_container_width=True)
-
-     #Interactive Earthquake Map
-     st.subheader("Earthquake Locations in Japan")
-
-     map_df = filtered_df.copy()
-     map_df["latitude"] = pd.to_numeric(
-         map_df["latitude"],errors = "coerce"
-     )
-     map_df["longitude"] = pd.to_numeric(
+map_df = filtered_df.copy()
+map_df["latitude"] = pd.to_numeric(
+  map_df["latitude"],errors = "coerce"
+)
+map_df["longitude"] = pd.to_numeric(
          map_df["longitude"], errors="coerce"
-     )
-     map_df = map_df.dropna(
+)
+map_df = map_df.dropna(
          subset = ["latitude", "longitude"]
-     )
+)
 
-     if not map_df.empty:
+if not map_df.empty:
          # default map
          map_center = [36.2, 138.2]
          zoom_level = 5
@@ -318,20 +610,185 @@ try:
             f"Displaying {len(map_df):,} earthquake locations"
             f"out of {len(filtered_df):,} filtered records."
          )
-     else :
+else :
         st.warning("No earthquake records found for the selected filters")
 
-     st.subheader("Earthquake Dataset Preview")
+st.markdown("---")
 
-     st.dataframe(
-        df.head(10),
-        use_container_width=True
-     )
+#Graph Section
 
-except FileNotFoundError:
-    st.error(
-        "Earthquake CSV file not found. Pleaase check the file path"
+st.markdown(
+    f'<p class="section-title">{t["earthquake_data_visualization"]}</p>',
+    unsafe_allow_html=True
+)
+
+chart_layout = {
+    "template": "plotly_dark",
+    "paper_bgcolor": "#111c2e",
+    "plot_bgcolor": "#111c2e",
+    "font": {
+        "color":"#ffffff"
+    },
+    "margin": {
+        "l":30,
+        "r":20,
+        "t":55,
+        "b":40
+    }
+}
+
+#graph 1 : earthquakes per year
+
+yearly_frequency = (
+       filtered_df.groupby("year")
+         .size()
+         .reset_index(name="Earthquakes")
+)
+
+fig_year = px.bar(
+         yearly_frequency,
+         x="year",
+         y="Earthquakes",
+         title=t["year_chart"],
+         labels={
+             "year": "Year",
+             "Earthquakes": "Number of Earthquakes"
+         },
+         color="Earthquakes",
+         color_continuous_scale="Teal"
+)
+
+fig_year.update_layout(
+    **chart_layout,
+    title_font=dict(
+        color="#ffffff",
+        size=12
+    )
+)
+
+#graph 2 : earthquakes per month
+
+monthly_frequency = (
+       filtered_df.groupby("month")
+         .size()
+         .reset_index(name="Earthquakes")
+)
+
+fig_month = px.bar(
+         monthly_frequency,
+         x="month",
+         y="Earthquakes",
+         title=t["month_chart"],
+         labels={
+             "month":"Month",
+             "Earthquakes":"Number of Earthquakes"
+         },
+         color="Earthquakes",
+         color_continuous_scale = "Teal"
+)
+
+fig_month.update_layout(
+    **chart_layout,
+    title_font=dict(
+        color="#ffffff",
+        size=12
+    )
+)
+
+#graph 3: earthquakes by region
+
+region_frequency = (
+    filtered_df[
+      filtered_df["region"] != ""
+    ]
+    .groupby("region")
+    .size()
+    .reset_index(name="Earthquakes")
+    .sort_values(
+        "Earthquakes",
+        ascending  = False
+    )
+    .head(10)
+)
+
+fig_region = px.bar(
+    region_frequency.sort_values(
+        "Earthquakes",
+        ascending = True
+    ),
+    x="Earthquakes",
+    y="region",
+    orientation="h",
+    title=t["region_chart"],
+    color="Earthquakes",
+    color_continuous_scale="Viridis"
+)
+
+fig_region.update_layout(
+    **chart_layout,
+    title_font=dict(
+        color="#ffffff",
+        size=12
+    )
+)
+
+#graph 4: earthquakes by magnitude
+magnitude_df = filtered_df.dropna(
+    subset=["mag"]
+).copy()
+
+fig_magnitude = px.histogram(
+    magnitude_df,
+    x="mag",
+    nbins=20,
+    title=t["magnitude_chart"],
+    color_discrete_sequence=['#38bdf8']
+)
+
+fig_magnitude.update_layout(
+    **chart_layout,
+    title_font=dict(
+        color="#ffffff",
+        size=12
+    )
+)
+
+#display graphs in two rows
+graph_col1,graph_col2 = st.columns(2)
+
+with graph_col1:
+    st.plotly_chart(
+        fig_year,
+        use_container_width = True
     )
 
-except Exception as e:
-    st.error(f"Error loading dataset:{e}")
+with graph_col2:
+    st.plotly_chart(
+        fig_month,
+        use_container_width = True
+    )
+
+graph_col3, graph_col4 = st.columns(2)
+with graph_col3:
+    st.plotly_chart(
+        fig_region,
+        use_container_width=True
+    )
+
+with graph_col4:
+    st.plotly_chart(
+        fig_magnitude,
+        use_container_width = True
+    )
+
+#Footer
+st.markdown(
+    f"""
+    <div class="footer">
+        {t["footer"]}
+        <br>
+        {t["earthquake_analysis_dashboard"]}
+    </div>
+    """,
+    unsafe_allow_html = True
+)
