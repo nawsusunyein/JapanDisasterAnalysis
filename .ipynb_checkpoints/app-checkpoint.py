@@ -219,8 +219,17 @@ translations = {
           "footer":"Analysed by Naw Su Su Nyein",
           "no_data":"No earthquake records found for the selected filters.",
           "earthquake_data_visualization": "Earthquake Data Visualization",
-          "earthquake_filtered_records":"Displaying 11,904 earthquake locations out of 11,904 filtered records.",
-          "earthquake_analysis_dashboard":"Japan Earthquake Analysis Dashboard"
+          "earthquake_filtered_records":"Displaying {shown:,} earthquake locations out of {total:,} filtered records.",
+          "earthquake_analysis_dashboard":"Japan Earthquake Analysis Dashboard",
+          "num_of_earthquakes" : "Number of Earthquakes",
+          "graph_year" : "Year",
+          "graph_month":"Month",
+          "graph_region":"Region",
+          "graph_mag": "Magnitude",
+          "graph_count" : "Count",
+          "title_desc" : "Explore earthquake activity across Japan from 2001 to 2018",
+          "filter_lang" : "Language",
+          "no_record_found" : "No earthquake records found for the selected filters."
           
       },
       "JP" : {
@@ -244,8 +253,17 @@ translations = {
           "footer":"分析者：Naw Su Su Nyein",
           "no_data":"選択した条件に該当する地震データはありません。",
           "earthquake_data_visualization": "地震データの可視化",
-          "earthquake_filtered_records":"絞り込み後の11,904件のデータのうち、11,904件の地震発生地点を表示しています。",
-          "earthquake_analysis_dashboard":"日本の地震分析ダッシュボード"
+          "earthquake_filtered_records":"絞り込み後の{total:,}件のデータのうち、{shown:,}件の地震発生地点を表示しています。",
+          "earthquake_analysis_dashboard":"日本の地震分析ダッシュボード",
+          "num_of_earthquakes" : "地震の発生回数",
+          "graph_year" : "年",
+          "graph_month":"月",
+          "graph_region":"地域",
+          "graph_mag": "マグニチュード（地震の規模）",
+          "graph_count" : "件数",
+          "title_desc" : "2001年から2018年までの日本全国の地震活動を調べましょう。",
+          "filter_lang" : "言語",
+          "no_record_found" : "選択したフィルター条件に一致する地震データが見つかりません。"
       },
       "MM" : {
           "title":"ဂျပန်နိုင်ငံ ငလျင်ဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာမှု Dashboard",
@@ -268,19 +286,20 @@ translations = {
           "footer":"လေ့လာဆန်းစစ်သူ - Naw Su Su Nyein",
           "no_data":"ရွေးချယ်ထားသော စစ်ထုတ်မှုများအတွက် ငလျင်မှတ်တမ်း မရှိပါ။",
           "earthquake_data_visualization": "ငလျင်ဒေတာ ဖော်ပြခြင်း",
-          "earthquake_filtered_records":"စစ်ထုတ်ထားသော မှတ်တမ်း ၁၁,၉၀၄ ခုအနက် ငလျင်ဖြစ်ပွားသည့် တည်နေရာ ၁၁,၉၀၄ ခုကို ပြသထားသည်။",
-          "earthquake_analysis_dashboard":"ဂျပန်နိုင်ငံ ငလျင်ဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာမှု ဒက်ရှ်ဘုတ်"
+          "earthquake_filtered_records":"စစ်ထုတ်ထားသော မှတ်တမ်း {total:,} ခုအနက် ငလျင်ဖြစ်ပွားသည့် တည်နေရာ {shown:,} ခုကို ပြသထားသည်။",
+          "earthquake_analysis_dashboard":"ဂျပန်နိုင်ငံ ငလျင်ဆိုင်ရာ ခွဲခြမ်းစိတ်ဖြာမှု ဒက်ရှ်ဘုတ်",
+          "num_of_earthquakes" : "ငလျင်ဖြစ်ပွားမှု အကြိမ်ရေ",
+          "graph_year" : "ခုနှစ်",
+          "graph_month":"လ",
+          "graph_region":"ဒေသ",
+          "graph_mag": "ငလျင်ပြင်းအား",
+          "graph_count" : "အရေအတွက်",
+          "title_desc" : "၂၀၀၁ ခုနှစ်မှ ၂၀၁၈ ခုနှစ်အထိ ဂျပန်နိုင်ငံတစ်ဝန်း ငလျင်လှုပ်ရှားမှုများကို လေ့လာကြည့်ရှုပါ။",
+          "filter_lang" : "ဘာသာစကား",
+          "no_record_found":"ရွေးချယ်ထားသော စစ်ထုတ်မှုများနှင့် ကိုက်ညီသည့် ငလျင်မှတ်တမ်း မတွေ့ရှိပါ။"
       }
   }
 
-#Dashboard Title
-
-st.markdown(
-    """
-      Explore earthquake activity across Japan 
-      from 2001 to 2018
-    """
-)
 
 # Load dataset
 
@@ -314,6 +333,8 @@ def load_data():
         df["mag"], errors="coerce"
     )
 
+    df = df[~df["place"].str.contains("China", case=False, na=False)]
+    
     df["region"] = (
          df["place"] 
           .fillna("")
@@ -343,11 +364,12 @@ except Exception as e:
 #header : title + language
 
 header_col1, header_col2 = st.columns([5,1])
-
+language = "JP"
+t = translations[language]
 with header_col2:
 
      language = st.selectbox(
-         "Language",
+         t["filter_lang"],
          ["EN","JP","MM"],
          index = 1,
          format_func=lambda x: {
@@ -360,6 +382,18 @@ with header_col2:
 with header_col1:
 
      st.title(t["title"])
+     st.markdown(
+        f"""
+        <p style="
+            color: #94a3b8;
+            font-size: 15px;
+            margin-top: -10px;
+        ">
+            {t['title_desc']}
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
 st.markdown("---")
 
 #Filter Section
@@ -607,11 +641,13 @@ if not map_df.empty:
          )
 
          st.caption(
-            f"Displaying {len(map_df):,} earthquake locations"
-            f"out of {len(filtered_df):,} filtered records."
+           t["earthquake_filtered_records"].format(
+               shown=len(map_df),
+               total=len(filtered_df)
+           )
          )
 else :
-        st.warning("No earthquake records found for the selected filters")
+        st.warning(t["no_record_found"])
 
 st.markdown("---")
 
@@ -651,8 +687,8 @@ fig_year = px.bar(
          y="Earthquakes",
          title=t["year_chart"],
          labels={
-             "year": "Year",
-             "Earthquakes": "Number of Earthquakes"
+             "year": t["graph_year"],
+             "Earthquakes": t["num_of_earthquakes"]
          },
          color="Earthquakes",
          color_continuous_scale="Teal"
@@ -680,8 +716,8 @@ fig_month = px.bar(
          y="Earthquakes",
          title=t["month_chart"],
          labels={
-             "month":"Month",
-             "Earthquakes":"Number of Earthquakes"
+             "month":t["graph_month"],
+             "Earthquakes":t["num_of_earthquakes"]
          },
          color="Earthquakes",
          color_continuous_scale = "Teal"
@@ -718,6 +754,10 @@ fig_region = px.bar(
     ),
     x="Earthquakes",
     y="region",
+    labels={
+             "region":t["region"],
+             "Earthquakes":t["num_of_earthquakes"]
+         },
     orientation="h",
     title=t["region_chart"],
     color="Earthquakes",
@@ -741,6 +781,9 @@ fig_magnitude = px.histogram(
     magnitude_df,
     x="mag",
     nbins=20,
+    labels={
+        "mag":t["graph_mag"]
+    },
     title=t["magnitude_chart"],
     color_discrete_sequence=['#38bdf8']
 )
